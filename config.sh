@@ -57,12 +57,15 @@ _EOF_
 # libcurl4-openssl-dev          - For ngnix
         echo "Installing required packages"
         echo "  |- [1/9] htop for your system statistics pleasures"
+		echo "======== htop for your system statistics pleasures" &>>bootstrap.log
         apt-get install -y htop &>>bootstrap.log
 
         echo "  |- [2/9] build-essential used to compile ruby from the source."
+		echo "======== build-essential used to compile ruby from the source." &>>bootstrap.log
         apt-get install -y build-essential &>>bootstrap.log
 
         echo "  |- [3/9] openssl + libssl-dev required for the rails server and bundle."
+		echo "======== openssl + libssl-dev required for the rails server and bundle." &>>bootstrap.log
         apt-get install -y openssl libssl-dev &>>bootstrap.log
 
         # echo "  |- [4/9] ruby-dev for rails and ngnix."
@@ -70,18 +73,22 @@ _EOF_
         # apt-get install -y ruby-dev &>>bootstrap.log
 
         echo "  |- [5/9] libsqlite3-dev + sqlite3 required to run rails server."
+		echo "======== libsqlite3-dev + sqlite3 required to run rails server." &>>bootstrap.log
         apt-get install -y libsqlite3-dev sqlite3 &>>bootstrap.log
 
-        echo "  |- [6/9] nodejs Javascript runtime required for the rails asset pipeline."
-        apt-get install -y nodejs &>>bootstrap.log
+        # echo "  |- [6/9] nodejs Javascript runtime required for the rails asset pipeline."
+        # apt-get install -y nodejs &>>bootstrap.log
 
         echo "  |- [7/9] zlib1g-dev for ngnix."
+		echo "======== zlib1g-dev for ngnix."  &>>bootstrap.log
         apt-get install -y zlib1g-dev &>>bootstrap.log
 
         echo "  |- [8/9] libcurl4-openssl-dev for ngnix"
+		echo "======== libcurl4-openssl-dev for ngnix" &>>bootstrap.log
         apt-get install -y libcurl4-openssl-dev &>>bootstrap.log
 
         echo "  \- [9/9] postgresql-9.3 as a database server"
+		echo "======== postgresql-9.3 as a database server" &>>bootstrap.log
         apt-get install -y libpq-dev &>>bootstrap.log
         # This automatically installs postgresql and postgresql client!
         apt-get install -y postgresql-9.3 &>>bootstrap.log
@@ -115,6 +122,11 @@ wget http://cache.ruby-lang.org/pub/ruby/2.1/ruby-$ruby_version.tar.gz &>/dev/nu
         rm -r -f $ruby_version &>>bootstrap.log
         rm ruby-$ruby_version.tar.gz &>>bootstrap.log
         cd $HOME
+		
+#----------------------- STOP ------------------------------
+		echo "Stopped after installing Ruby and apt-get's"
+        read -p "Press [Enter] key to continue..."
+#----------------------- STOP ------------------------------
 
 
 # Mainly to update Rdoc and minitest and whatnot.
@@ -175,34 +187,45 @@ gem install pg &>>bootstrap.log
 		# Add in therubyracer gem as the JS runtime to the Gemfile.
 		# Not nodejs since apt-get install nodejs is not seen via phusion
 		# for some reason.
-		cat <<- _EOF_ >$HOME/demo_rails_app/Gemfile
+		cat <<- _EOF_ >>$HOME/demo_rails_app/Gemfile
             gem "therubyracer", :require => 'v8'
 _EOF_
 
 	cd demo_rails_app
-	sudo bundle
+	sudo bundle &>>bootstrap.log
 	
 #----------------------- STOP ------------------------------
-		# echo "Stopped before setting up configurations."
-        # read -p "Press [Enter] key to continue..."
+		echo "Stopped before setting up configurations."
+        read -p "Press [Enter] key to continue..."
 #----------------------- STOP ------------------------------
 
 # Do this manually since I have no clue how to use SED yet. Redirected to null for now.
 # Edit /etc/nginx/nginx.conf with this after the script is done.
+
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.old
+
+sed -i '/# passenger_root/c\        passenger_root /usr/local/lib/ruby/gems/2.1.0/gems/passenger-4.0.33;' /etc/nginx/nginx.conf
+sed -i '/# passenger_ruby/c\        passenger_ruby /usr/local/bin/ruby;' /etc/nginx/nginx.conf
+sed '/http {/a error_log  /home/hak8or/demo_rails_app/log/nginx_error.log;' /etc/nginx/nginx.conf
+
+line_http_starts=$(grep -nr "http {" /etc/nginx/nginx.conf |cut -f1 -d:)
+
+text_line="'"
+text_line+=$line_http_starts
+text_line+="i server {'"
+# sed $text_line /etc/nginx/nginx.conf.old
+
+# Put the stuff below manually into /etc/nginx/nginx.conf
 cat <<- _EOF_ >/dev/null
-                error_log  /home/hak8or/demo_rails_app/log/nginx_error.log;
-
-                http {
-                    passenger_root /usr/local/lib/ruby/gems/2.0.0/gems/passenger-4.0.30;
-                    passenger_ruby /usr/local/bin/ruby;
-
-                        server {
-                                listen 1337;
-                                server_name localhost;
-                                root /home/hak8or/demo_rails_app/public;
-                                passenger_enabled on;
-                        }
-                }
+http {
+		server {
+				rack_env development;
+				listen 1337;
+				server_name localhost;
+				root /home/hak8or/demo_rails_app/public;
+				passenger_enabled on;
+		}
+}
 _EOF_
 
 user_name=demo_user
@@ -244,3 +267,15 @@ echo "  Ruby version: $ruby_version        Rails version: $rails_version"
 echo "  Demo RoR project located in $HOME/demo_rails_app"
 echo ""
 echo "  Nginx error logs are redirected to $HOME/demo_rails_app/logs"
+echo ""
+echo " REMEBER TO CHANGE /etc/nginx/nginx.conf to your intended server configuration!!!!"
+echo "http {"
+echo "		server {"
+echo "				rack_env development;"
+echo "				listen 1337;"
+echo "				server_name localhost;"
+echo "				root /home/hak8or/demo_rails_app/public;"
+echo "				passenger_enabled on;"
+echo "		}"
+echo "}"
+

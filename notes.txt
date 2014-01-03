@@ -1,0 +1,91 @@
+ The current issue is what version of ruby and what gems passanger is using. Right now it is using the default version which
+ does not have bundle and crap set up, so I must find where ruby is installed right now and tell that to passanger.
+
+ 
+access_log /var/log/nginx/access.log;
+error_log /var/log/nginx/error.log;
+
+
+
+------------ FROM DEFAULT CONF ------------
+passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
+passenger_ruby /usr/bin/ruby;
+------------ FROM DEFAULT CONF ------------
+
+##
+# Logging Settings
+##
+
+access_log /var/log/nginx/access.log;
+error_log /var/log/nginx/error.log;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+user_name=demo_user
+password=pass1
+#echo "CREATE ROLE $user_name WITH LOGIN ENCRYPTED PASSWORD '$password';" | sudo -i -u postgres psql
+echo "CREATE ROLE $user_name WITH LOGIN PASSWORD '$password';" | sudo -i -u postgres psql
+sudo -i -u postgres createdb --owner=$user_name demo_rails_app_development
+sudo -i -u postgres createdb --owner=$user_name demo_rails_app_test
+sudo -i -u postgres createdb --owner=$user_name demo_rails_app_app
+
+user_name=demo_user
+password=pass1
+#echo "CREATE ROLE $user_name WITH LOGIN ENCRYPTED PASSWORD '$password';" | sudo -i -u postgres psql
+echo "CREATE ROLE $user_name WITH LOGIN PASSWORD '$password';" | sudo -i -u postgres psql
+sudo -i -u postgres createdb --owner=$user_name demo_rails_app_development
+sudo -i -u postgres createdb --owner=$user_name demo_rails_app_test
+sudo -i -u postgres createdb --owner=$user_name demo_rails_app_app
+
+
+
+
+
+
+# ----------------------- NOTES ---------------
+# Nginx with Passenger support was successfully installed.
+#
+# Please edit your Nginx configuration file (probably /opt/nginx/conf/nginx.conf),
+# and set the passenger_root and passenger_ruby configuration options in the
+# 'http' block, like this:
+#
+#   http {
+#       ...
+#       passenger_root /usr/local/lib/ruby/gems/2.0.0/gems/passenger-4.0.26;
+#       passenger_ruby /usr/local/bin/ruby;
+#       ...
+#   }
+#
+# After you (re)start Nginx, you are ready to deploy any number of Ruby on Rails
+# applications on Nginx.
+
+----- My ngnix.conf thing ---
+    passenger_root /usr/local/lib/ruby/gems/2.0.0/gems/passenger-4.0.20;
+    passenger_ruby /usr/local/bin/ruby;
+
+/usr/local/lib/ruby/gems/2.0.0/gems/passenger-4.0.20
+/usr/local/lib/ruby/gems/2.0.0/gems/passenger-4.0.26/buildout/agents/PassengerWatchdog
+
+------------- error from console ------
+
+Starting the nginx server
+Starting nginx: nginx: [alert] Unable to start the Phusion Passenger watchdog because its executable (/usr/local/lib/ruby/gems/2.0.0/gems/passenger-4.0.20/buildout/agents/PassengerWatchdog) does not exist. This probably means that your Phusion Passenger installation is broken or incomplete, or that your 'passenger_root' directive is s                           et to the wrong value. Please reinstall Phusion Passenger or fix your 'passenger_root' directive, whichever is applicable. (-1: Unknown error)
+nginx.
