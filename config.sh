@@ -105,10 +105,11 @@ echo " [4/9] Installing ruby"
         cd ruby-$ruby_version &>>bootstrap.log
 
 # Install ruby from source.
+        Processor_Count=`grep -c ^processor /proc/cpuinfo`
         echo "    |- [3/5] running configure"
         ./configure  &>>bootstrap.log
-        echo "    |- [4/5] running make (This takes a while)"
-        make &>>bootstrap.log
+        echo "    |- [4/5] running make on $Processor_Count core(s). (This takes a while)"
+        make -j $Processor_Count &>>bootstrap.log
 		# Not sure if I actually need this for anything.
         # make test 
         echo "    \- [5/5] running install"
