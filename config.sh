@@ -96,22 +96,22 @@ _EOF_
 echo " [4/9] Installing ruby"
 # Get ruby 2.1.0 stable source from the official ruby website.
     ruby_version=2.1.0
-    echo "    |- [1/6] Downloading ruby $ruby_version source tarball"
+    echo "    |- [1/5] Downloading ruby $ruby_version source tarball"
     wget http://cache.ruby-lang.org/pub/ruby/2.1/ruby-$ruby_version.tar.gz &>/dev/null
 
 # Extract and enter the resulting directory.
-        echo "    |- [2/6] Extracting ruby source"
+        echo "    |- [2/5] Extracting ruby source"
         tar -xzvf ruby-$ruby_version.tar.gz &>>/dev/null
         cd ruby-$ruby_version &>>bootstrap.log
 
 # Install ruby from source.
-        echo "    |- [3/6] running configure"
+        echo "    |- [3/5] running configure"
         ./configure  &>>bootstrap.log
-        echo "    |- [4/6] running make (This takes a while)"
+        echo "    |- [4/5] running make (This takes a while)"
         make &>>bootstrap.log
 		# Not sure if I actually need this for anything.
         # make test 
-        echo "    \- [5/6] running install"
+        echo "    \- [5/5] running install"
         make install &>>bootstrap.log
         cd .. # Exit directory
 
@@ -155,7 +155,7 @@ _EOF_
     sudo apt-get update &>>/dev/null
     sudo apt-get -y install nginx-extras passenger &>>bootstrap.log
 
-# Changes the swapfile from the standard 512MB to 1GB for ngnix installation if
+# Changes the swapfile from the standard 512MB to 1GB for ngnix installation. If
 # there is less than 1 GB of ram on the system so nginx won't complain.
     memory_size_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}'  )
     if [ $memory_size_KB -lt 1048576 ]; then
@@ -259,7 +259,7 @@ echo "| Demo RoR project located in $HOME/demo_rails_app      |"
 echo "| Nginx error logs located in $HOME/demo_rails_app/logs |"
 echo "| Log for this script located in $HOME/bootstrap.log    |"
 echo "|                                                              |"
-echo "| Postgres Version: 9.3    Phusion Passenver version: 4.0.33   |"
+echo "| Postgres Version: 9.3    Phusion Passenger version: 4.0.33   |"
 echo "| Ruby version: $ruby_version      Rails version: $rails_version          |"
 echo "|                                                              |"
 echo "+--------------------------------------------------------------+"
