@@ -32,7 +32,7 @@ echo "| minutes.                                           |"
 echo "+----------------------------------------------------+"
 
 # Add in the latest postgresql official ppa.
-        echo "  [1/9] Adding in the postgresql official PPA"
+        echo "  [1/10] Adding in the postgresql official PPA"
         touch /etc/apt/sources.list.d/pgdg.list
 
         cat <<- _EOF_ >/etc/apt/sources.list.d/pgdg.list
@@ -43,7 +43,7 @@ _EOF_
         apt-key add ACCC4CF8.asc &>>bootstrap.log
 
 # Lets fetch all the required dependencies.
-        echo "  [2/9] Updating ubuntu"
+        echo "  [2/10] Updating ubuntu"
         touch $HOME/bootstrap.log &>>bootstrap.log
         apt-get update > /dev/null
 
@@ -55,7 +55,7 @@ _EOF_
 # libsqlite3-dev, sqlite3       - Required to run rails server.
 # openssl, libssl-dev           - Required for the rails server and bundle.
 # libcurl4-openssl-dev          - For ngnix
-        echo "  [3/9] Installing required packages"
+        echo "  [3/10] Installing required packages"
         echo "    |- [1/7] htop for your system statistics pleasures"
 		echo "======== htop for your system statistics pleasures" &>>bootstrap.log
         apt-get install -y htop &>>bootstrap.log
@@ -93,7 +93,7 @@ _EOF_
         # This automatically installs postgresql and postgresql client!
         apt-get install -y postgresql-9.3 &>>bootstrap.log
 
-echo " [4/9] Installing ruby"
+echo "  [4/10] Installing ruby"
 # Get ruby 2.1.0 stable source from the official ruby website.
     ruby_version=2.1.0
     echo "    |- [1/5] Downloading ruby $ruby_version source tarball"
@@ -125,7 +125,7 @@ echo " [4/9] Installing ruby"
 		# echo "Stopped after installing Ruby and apt-get's"
         # read -p "Press [Enter] key to continue..."
 #----------------------- STOP ------------------------------
-echo "  [5/9] Install remainder to stack."
+echo "  [5/10] Install remainder to stack."
 
 # Mainly to update Rdoc and minitest and whatnot.
     echo "    |- [1/6] Updating ruby system gems"
