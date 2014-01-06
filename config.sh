@@ -31,6 +31,9 @@ echo "| awe at the hours of setting up shortened to mere   |"
 echo "| minutes.                                           |"
 echo "+----------------------------------------------------+"
 
+working_directory="$HOME"
+ruby_version=2.1.0
+
 # Add in the latest postgresql official ppa.
         echo "  [1/10] Adding in the postgresql official PPA"
         touch /etc/apt/sources.list.d/pgdg.list
@@ -93,33 +96,38 @@ _EOF_
         # This automatically installs postgresql and postgresql client!
         apt-get install -y postgresql-9.3 &>>bootstrap.log
 
-echo "  [4/10] Installing ruby"
+
 # Get ruby 2.1.0 stable source from the official ruby website.
-    ruby_version=2.1.0
+    echo "  [4/10] Installing ruby"
     echo "    |- [1/5] Downloading ruby $ruby_version source tarball"
+    mkdir $working_directory
+    cd $working_directory
     wget http://cache.ruby-lang.org/pub/ruby/2.1/ruby-$ruby_version.tar.gz &>/dev/null
 
 # Extract and enter the resulting directory.
-        echo "    |- [2/5] Extracting ruby source"
-        tar -xzvf ruby-$ruby_version.tar.gz &>>/dev/null
-        cd ruby-$ruby_version &>>bootstrap.log
+    echo "    |- [2/5] Extracting ruby source"
+    tar -xzvf ruby-$ruby_version.tar.gz &>>/dev/null
+    cd ruby-$ruby_version &>>bootstrap.log
 
 # Install ruby from source.
-        Processor_Count=`grep -c ^processor /proc/cpuinfo`
-        echo "    |- [3/5] running configure"
-        ./configure  &>>bootstrap.log
-        echo "    |- [4/5] running make on $Processor_Count core(s). (This takes a while)"
-        make -j $Processor_Count &>>bootstrap.log
-		# Not sure if I actually need this for anything.
-        # make test 
-        echo "    \- [5/5] running install"
-        make install &>>bootstrap.log
-        cd .. # Exit directory
+    Processor_Count=`grep -c ^processor /proc/cpuinfo`
+    echo "    |- [3/5] running configure"
+    ./configure  &>>bootstrap.log
+
+    echo "    |- [4/5] running make on $Processor_Count core(s). (This takes a while)"
+    make -j $Processor_Count &>>bootstrap.log
+
+	# Not sure if I actually need this for anything.
+    # make test 
+
+    echo "    \- [5/5] running install"
+    make install &>>bootstrap.log
+    cd ..
 
 # Clean the ruby installation files
-        rm -r -f $ruby_version &>>bootstrap.log
-        rm ruby-$ruby_version.tar.gz &>>bootstrap.log
-        cd $HOME
+    rm -r -f $ruby_version &>>bootstrap.log
+    rm ruby-$ruby_version.tar.gz &>>bootstrap.log
+    cd $working_directory
 		
 #----------------------- STOP ------------------------------
 		# echo "Stopped after installing Ruby and apt-get's"
@@ -186,12 +194,12 @@ _EOF_
 
     rails new demo_rails_app -d postgresql &>>bootstrap.log
 
-    touch $HOME/demo_rails_app/log/nginx_error.log
+    touch $working_directory/demo_rails_app/log/nginx_error.log
 
     # Add in therubyracer gem as the JS runtime to the Gemfile.
     # Not nodejs since apt-get install nodejs is not seen via phusion
     # for some reason.
-    cat <<- _EOF_ >>$HOME/demo_rails_app/Gemfile
+    cat <<- _EOF_ >>$working_directory/demo_rails_app/Gemfile
         gem "therubyracer", :require => 'v8'
 _EOF_
 
@@ -216,9 +224,9 @@ _EOF_
     sudo -i -u postgres createdb --owner=$user_name demo_rails_app_test
     sudo -i -u postgres createdb --owner=$user_name demo_rails_app_app
 
-    sudo sed -i 's/username: demo_rails_app/username: demo_user/g' ~/demo_rails_app/config/database.yml
-    sudo sed -i 's/password:/password: pass1/g' ~/demo_rails_app/config/database.yml
-    sudo sed -i 's/#host: localhost/host: localhost/g' ~/demo_rails_app/config/database.yml
+    sudo sed -i 's/username: demo_rails_app/username: demo_user/g' $working_directory/demo_rails_app/config/database.yml
+    sudo sed -i 's/password:/password: pass1/g' $working_directory/demo_rails_app/config/database.yml
+    sudo sed -i 's/#host: localhost/host: localhost/g' $working_directory/demo_rails_app/config/database.yml
 
 # Modify nginx.conf as much as I can via the script so that it uses ruby and RoR.
     echo "  [9/10] Editing nginx.conf"
@@ -228,7 +236,7 @@ _EOF_
 
     sed -i '/# passenger_root/c\        passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;' /etc/nginx/nginx.conf
     sed -i '/# passenger_ruby/c\        passenger_ruby /usr/local/bin/ruby;' /etc/nginx/nginx.conf
-    sed -i '/ error_log/c\        /home/hak8or/demo_rails_app/log/nginx_error.log;' /etc/nginx/nginx.conf
+    sed -i '/ error_log/c\        $working_directory/demo_rails_app/log/nginx_error.log;' /etc/nginx/nginx.conf
 
     # line_http_starts=$(grep -nr "http {" /etc/nginx/nginx.conf |cut -f1 -d:)
     # text_line="'"
@@ -256,9 +264,9 @@ echo "|                  postgres tables                             |"
 echo "| demo_rails_app_development       demo_rails_app_test         |"
 echo "| demo_rails_app_app                                           |"
 echo "|                                                              |"
-echo "| Demo RoR project located in $HOME/demo_rails_app      |"
-echo "| Nginx error logs located in $HOME/demo_rails_app/logs |"
-echo "| Log for this script located in $HOME/bootstrap.log    |"
+echo "| Demo RoR project located in $working_directory/demo_rails_app      |"
+echo "| Nginx error logs located in $working_directory/demo_rails_app/logs |"
+echo "| Log for this script located in $working_directory/bootstrap.log    |"
 echo "|                                                              |"
 echo "| Postgres Version: 9.3    Phusion Passenger version: 4.0.33   |"
 echo "| Ruby version: $ruby_version      Rails version: $rails_version          |"
@@ -272,7 +280,7 @@ echo "       server {                                  "
 echo "         rack_env development;                   "
 echo "         listen 1337;                            "
 echo "         server_name localhost;                  "
-echo "         root /home/hak8or/demo_rails_app/public;"
+echo "         root $working_directory/demo_rails_app/public;"
 echo "         passenger_enabled on;                   "
 echo "       }                                         "
 echo "and afterwards run sudo service nginx restart for the changes to"
