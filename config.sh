@@ -31,8 +31,17 @@ echo "| awe at the hours of setting up shortened to mere   |"
 echo "| minutes.                                           |"
 echo "+----------------------------------------------------+"
 
-working_directory="$HOME"
-log_location="$working_directory/config.log"
+# When the script gets provisioned on a vagrant box, the current home directory is root,
+# which is not what we want. So, if the vagrant option is put in from the vagrantfile then
+# this will be installed into /home/vagrant instead of /vagrant/root.
+if [[ $1 == "vagrant" ]]; then
+    working_directory="/home/vagrant"
+    log_location="$working_directory/config.log"
+else
+    working_directory="$HOME"
+    log_location="$working_directory/config.log"
+fi
+
 ruby_version=2.1.0
 
 # Make the logging file
@@ -205,7 +214,13 @@ _EOF_
     echo "  [6/10] Generating rails app"
     echo "----FROM SCRIPT ECHO---- Generating rails app" &>>$log_location
 
-    if [ -d "demo_rails_app" ]; then
+    # If this is not being run in a vagrant box and the directory exists,
+    # copy the rename the directory to .old
+    # If this is a vagrant box then the folder will exist due to it being shared
+    # as per the vagrantfile.
+    # This assumes the vagrant box is not being reprovisioned, I should put a 
+    # check and handler for that in here eventually.
+    if [ -d "demo_rails_app" ] && [ "$1" != "vagrant" ]; then
       echo "        There is an old demo_rails_app directory here for some reason."
       echo "        Renaming old demo_rails_app to demo_rails_app.old"
       mv demo_rails_app demo_rails_app.old
@@ -279,7 +294,7 @@ echo "security was not kept in mind."
 echo "+--------------------------------------------------------------+"
 echo "|                     || Information ||                        |"
 echo "|                                                              |"
-echo "| Current IP: $Current_IP                                  |"
+echo "| Current IP: $Current_IP"
 echo "|                                                              |"
 echo "| postgres role: demo_rails_app   postgres password: pass1     |"
 echo "|                                                              |"
@@ -287,9 +302,9 @@ echo "|                  postgres tables                             |"
 echo "| demo_rails_app_development       demo_rails_app_test         |"
 echo "| demo_rails_app_app                                           |"
 echo "|                                                              |"
-echo "| Demo RoR project located in $working_directory/demo_rails_app      |"
-echo "| Nginx error logs located in $working_directory/demo_rails_app/logs |"
-echo "| Log for this script located in $working_directory/$log_location    |"
+echo "| Demo RoR project located in $working_directory/demo_rails_app"
+echo "| Nginx error logs located in $working_directory/demo_rails_app/logs"
+echo "| Log for this script located in $log_location"
 echo "|                                                              |"
 echo "| Postgres Version: 9.3    Phusion Passenger version: 4.0.33   |"
 echo "| Ruby version: $ruby_version      Rails version: $rails_version          |"
