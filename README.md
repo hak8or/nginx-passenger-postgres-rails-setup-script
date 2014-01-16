@@ -23,9 +23,9 @@ hak8or@ubuntu:~$ sudo ./config.sh
 | awe at the hours of setting up shortened to mere   |
 | minutes.                                           |
 +----------------------------------------------------+
-  [1/9] Adding in the postgresql official PPA
-  [2/9] Updating ubuntu
-  [3/9] Installing required packages
+  [1/10] Adding in the postgresql official PPA
+  [2/10] Updating ubuntu
+  [3/10] Installing required packages
     |- [1/7] htop for your system statistics pleasures
     |- [2/7] build-essential used to compile ruby from source
     |- [3/7] openssl + libssl-dev for rails server and bundle
@@ -33,13 +33,13 @@ hak8or@ubuntu:~$ sudo ./config.sh
     |- [5/7] zlib1g-dev for ngnix
     |- [6/7] libcurl4-openssl-dev for ngnix
     \- [7/7] postgresql-9.3 as a database server
- [4/9] Installing ruby
+  [4/10] Installing ruby
     |- [1/5] Downloading ruby 2.1.0 source tarball
     |- [2/5] Extracting ruby source
     |- [3/5] running configure
-    |- [4/5] running make (This takes a while)
+    |- [4/5] running make on 1 core(s). (This takes a while)
     \- [5/5] running install
-  [5/9] Install remainder to stack.
+  [5/10] Install remainder to stack.
     |- [1/6] Updating ruby system gems
     |- [2/6] Installing Rails (this takes a while too)
     |- [3/6] Installing passenger
@@ -57,7 +57,7 @@ security was not kept in mind.
 +--------------------------------------------------------------+
 |                     || Information ||                        |
 |                                                              |
-| Current IP: 192.168.100.123                                  |
+| Current IP: 10.0.2.15
 |                                                              |
 | postgres role: demo_rails_app   postgres password: pass1     |
 |                                                              |
@@ -65,11 +65,11 @@ security was not kept in mind.
 | demo_rails_app_development       demo_rails_app_test         |
 | demo_rails_app_app                                           |
 |                                                              |
-| Demo RoR project located in /home/hak8or/demo_rails_app      |
-| Nginx error logs located in /home/hak8or/demo_rails_app/logs |
-| Log for this script located in /home/hak8or/bootstrap.log    |
+| Demo RoR project located in /home/vagrant/demo_rails_app
+| Nginx error logs located in /home/vagrant/demo_rails_app/logs
+| Log for this script located in /home/vagrant/config.log
 |                                                              |
-| Postgres Version: 9.3    Phusion Passenver version: 4.0.33   |
+| Postgres Version: 9.3    Phusion Passenger version: 4.0.33   |
 | Ruby version: 2.1.0      Rails version: Rails 4.0.2          |
 |                                                              |
 +--------------------------------------------------------------+
