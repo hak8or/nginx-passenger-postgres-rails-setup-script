@@ -16,7 +16,7 @@
 # Passenger as default uses the older Ruby version (1.9.something) found in /usr/bin/ruby that ignores any gem
 # stuff I do as the hak8or user, so the passanger-ruby-source needs to be changed to /usr/local/bin/ruby in nginx.conf
 
-# Installing nodejs via apt-get as hak8or for the JS runtime does not seem to be seen by phusion, but manually adding 
+# Installing nodejs via apt-get as hak8or for the JS runtime does not seem to be seen by phusion, but manually adding
 # gem "therubyracer", :require => 'v8' into the gemfile to use V8 JS interpreter works instead. Run bundle afterwards.
 #  Therubyracer has issues on Heroku though, so I must try to find a way to use nodejs instead.
 
@@ -136,7 +136,7 @@ _EOF_
     make -j $Processor_Count &>>$log_location
 
 	# Not sure if I actually need this for anything.
-    # make test 
+    # make test
 
     echo "    \- [5/5] running install"
     echo "----FROM SCRIPT ECHO---- running install" &>>$log_location
@@ -147,7 +147,7 @@ _EOF_
     rm -r -f $ruby_version &>>$log_location
     rm ruby-$ruby_version.tar.gz &>>$log_location
     cd $working_directory
-		
+
 #----------------------- STOP ------------------------------
 		# echo "Stopped after installing Ruby and apt-get's"
         # read -p "Press [Enter] key to continue..."
@@ -200,7 +200,7 @@ _EOF_
         echo "    |- [4/6] Not changing swap file size to 1 GB"
         echo "----FROM SCRIPT ECHO---- Not changing swap file size to 1 GB" &>>$log_location
     fi
-		
+
 # Installs the json and pg gems since they have issues when installed via rails new and then bundle.
     echo "    |- [5/6] Installing json gem"
     echo "----FROM SCRIPT ECHO---- Installing json gem" &>>$log_location
@@ -218,7 +218,7 @@ _EOF_
     # copy the rename the directory to .old
     # If this is a vagrant box then the folder will exist due to it being shared
     # as per the vagrantfile.
-    # This assumes the vagrant box is not being reprovisioned, I should put a 
+    # This assumes the vagrant box is not being reprovisioned, I should put a
     # check and handler for that in here eventually.
     if [ -d "demo_rails_app" ] && [ "$1" != "vagrant" ]; then
       echo "        There is an old demo_rails_app directory here for some reason."
@@ -242,7 +242,7 @@ _EOF_
     echo "  [7/10] Running bundle"
     echo "----FROM SCRIPT ECHO---- Running bundle" &>>$log_location
 	sudo bundle &>>$log_location
-	
+
 #----------------------- STOP ------------------------------
 		# echo "Stopped before setting up configurations."
         # read -p "Press [Enter] key to continue..."
@@ -294,7 +294,17 @@ echo "security was not kept in mind."
 echo "+--------------------------------------------------------------+"
 echo "|                     || Information ||                        |"
 echo "|                                                              |"
-echo "| Current IP: $Current_IP"
+
+if [[ $1 == "vagrant" ]]; then
+  echo "| The following ports are forwaded which you can access with   |"
+  echo "| localhost:                                                   |"
+  echo "|   1337 for nginx webserver instead of 80                     |"
+  echo "|   3000 for rails tests server if you ever need it            |"
+  echo "|   2222 SSH port forwaded from 22.                            |"
+else
+  echo "| Current IP: $Current_IP"
+fi
+
 echo "|                                                              |"
 echo "| postgres role: demo_rails_app   postgres password: pass1     |"
 echo "|                                                              |"
