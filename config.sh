@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 # TODO
-#       Set up Rails and Postgres communication correctly
-#               Add host: localhost to database.yml and fix password with username in same file.
 #		Add in a lock to what version of Phusion to use.
 # DOES NOT WORK IN 14.04 YET! Packages required for passenger in 14.04 do not exist yet.
 
 # Set up NGINX server on a port besides 80, for some reason something else is running on 80 and overrides all my
 # changes to nginx.conf
-
-# The older Ruby 1.9.3 gets installed and set up for all the users, so when I manually install ruby 2.1.0 only
-# the hak8or user gets effected, resulting in the nobody user used by passanger getting screwed up.
-# hak8or@ubuntu:~/ruby-2.1.0/bin$ whereis ruby
-# ruby: /usr/bin/ruby /usr/lib/ruby /usr/local/bin/ruby /usr/local/lib/ruby /usr/share/man/man1/ruby.1.gz
 
 # Passenger as default uses the older Ruby version (1.9.something) found in /usr/bin/ruby that ignores any gem
 # stuff I do as the hak8or user, so the passanger-ruby-source needs to be changed to /usr/local/bin/ruby in nginx.conf
@@ -135,7 +128,7 @@ _EOF_
     echo "----FROM SCRIPT ECHO---- running make on $Processor_Count core(s). (This takes a while)" &>>$log_location
     make -j $Processor_Count &>>$log_location
 
-	# Not sure if I actually need this for anything.
+	  # Not sure if I actually need this for anything.
     # make test
 
     echo "    \- [5/5] running install"
